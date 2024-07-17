@@ -1,6 +1,7 @@
 const express = require('express')
 const app = express()
-const port = 3000
+const port = 5000
+const cors = require('cors')
 const axios = require('axios').default;
 const bodyParser = require("body-parser")
 
@@ -146,6 +147,7 @@ async function buildData(username) {
 }
 
 app.use(bodyParser.text())
+app.use(cors())
 
 app.get('/:username', async (req, res) =>  {
   const data = await buildData(req.params.username)
