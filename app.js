@@ -24,7 +24,6 @@ async function getFullArray(url) {
       fullArray = fullArray.concat(data)
       nextPageCursor = response.data.nextPageCursor
     } catch (error) {
-      //console.log(error)
     }
   } while (nextPageCursor !== null);
   return fullArray
@@ -46,6 +45,7 @@ async function getUserData(username) {
 }
 
 async function getUserPlaceData(id) {
+  console.log(id)
   let data = {
     Games: await getFullArray(`https://games.roblox.com/v2/users/${id}/games?limit=50&`)
   }
@@ -79,7 +79,7 @@ async function roleCounts(Group, name, displayName) {
   for (const currentRole of roles) {
     const found = roleName.match(currentRole)
     if (found) {
-      return found
+      return true
     }
   }
   return false
@@ -124,7 +124,7 @@ async function getGroupPlaceData(data) {
   let newData = {}
   let games = []
   for (const group of data.Groups.Groups) {
-    await sleep(500)
+    await sleep(100)
     games = games.concat(await groupData(group.group.id))
   }
   games.sort((g1, g2) => g2.placeVisits - g1.placeVisits)
@@ -138,6 +138,7 @@ async function getGroupPlaceData(data) {
 }
 
 async function buildData(username) {
+  console.log(username) 
   let data = {}
   data.UserData = await getUserData(username)
   data.UserPlaceData = await getUserPlaceData(data.UserData.id)
@@ -150,8 +151,7 @@ app.use(bodyParser.text())
 app.use(cors())
 
 app.get('/:username', async (req, res) =>  {
-  const data = await buildData(req.params.username)
-  res.send(data)
+  buildData(req.params.username).then((data) => res.send(data)).catch((error) => console.log(error))
 })
 
 app.listen(port, () => {
